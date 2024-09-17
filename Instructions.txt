@@ -1,0 +1,70 @@
+NOTE (11/9/24): We are still seeking applicants, if you complete the code challenge - I will respond to you.
+
+Hello,
+
+We’re looking for an engineer with extensive C++ (running on embedded linux) and Python skills to join our team.
+
+Initially, you’ll work full time (40hrs/week or more if you want) on a project for about a month. After that: there will likely be an opportunity to come work with us either full time or part time on other, related projects.
+
+A bit to know about the work:
+- C++ running on embedded linux
+- Python running on a linux virtual machine (no GUI interface – just SSH)
+- You’ll need to be happy working with ‘non ideal’ obscure technology: some of the SDKs we interface with are not well documented, and have bugs. You will find tenacity, patience, good communication skills (written English) and a bit of humor necessary for this job :)
+
+Code Challenge
+To apply for this position, please complete the following code challenge:
+
+- Write a C++ program to generate a random number once per sec.
+- Each new random number will be transmitted via websocket to a Python script
+- The Python script uses the Bokeh Python GUI framework to create a very simple display (just a screen, with the number shown, continuously updating).
+
+Now is when you might ask: “Wait... Bokeh is weird... I have never heard of that being used for a Python display...” Yep... just like all the tech we work on – weird and obscure, gotta figure it out :)
+
+- Include all of your code in a Github repo.
+PLEASE: Send me a link to your repo.
+* Your repo will include a Readme with the following documentation:
+- How to compile and run your C++ program. How to run the Python script
+- Anything else you want to mention
+* you don’t need to spend that much time on the Readme, we just want to see you are happy briefly documenting your code so another engineer can run it / understand it
+
+Both the C++ program and Python script will run on your local computer (can be Windows or Linux: does not mater).
+
+PLEASE: Make a very short screen capture video (using Bandicam) showing your code starting up, and working (show C++ app and Python script start, then show the random number continuously updating on the Python Bokeh display)
+Put the short video (can be 30 sec or less) in a Google Drive location: send me a link so I can watch the video. No audio or captions are need with this video (literally just screen capture of your demo working).
+
+Work Details
+- Expect 40 Hrs/ week for at least a month. After that, there will likely be an opportunity for continuing full or part time work.
+- You'll need to be happy with chatting daily in Slack
+- You can be in any time zone, and any location
+- You'll need to sign a standard NDA and non compete agreement
+- You will be paid for every hour you work: if you want to work more than 40hr / week: we’ll pay for it (but remember: avoiding burn out is key: so let’s make sure you only work as much as you are comfortable with)
+- We only directly hire individuals (we don't work with agencies)
+
+
+
+
+
+
+
+
+
+
+~~~~~~~~~~~~~`
+Please write a C++ server and Python client for embedded linux using the following requirements:
+
+C++ Program:
+Use uWebSockets library for WebSocket communication
+Implement as a WebSocket server
+Use non-secure (non-TLS) connection, with no compression
+Use a single .cpp file (randgen_main.cpp) without a separate header file (apart from dependencies)
+One connected to a client, once per second, generate a random 32-bit unsigned int using modern C++ standard libs.
+Print the random number to the console on a new line, and send it in binary format over WebSocket.
+Gracefully handle sigterm and sigint to close the connection when received.
+Also gracefully exit when a connected client closes or loses connection
+
+
+Python Program:
+Implement a WebSocket client using a library like 'websockets'
+Use Bokeh framework to create a simple display
+Continuously update the display with received numbers via a callback function to handle incoming WebSocket messages
+Unpack received binary data into 32-bit integers
