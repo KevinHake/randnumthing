@@ -23,7 +23,7 @@ source .venv/bin/activate```
 `pip install -r requirements.txt`
 
 3. C++ setup:
-  3.1 Ensure you have a C++ compiler installed with modern C++ support (C++20 or newer), and a recent version of Make. For the record I used g++ 14.2.1 and GNU make 4.4.1.
+  3.1 Ensure you have a C and C++ compiler installed with modern C++ support (C++20 or newer), and a recent version of Make. For the record I used gcc 14.2.1 and GNU make 4.4.1.
   3.2 
 
 ## Running
@@ -58,12 +58,13 @@ Rather than a simple "sleep 1" for delay, I wake at an absolute time to avoid dr
 
 TODO? I implemented a signal handler to gracefully exit on SIGINT/SIGTERM because it drives me nuts when ports get tied up this way.
 TODO: python client shuts down if serer closes connection/we stop receiving data.
-
+TODO tag
 TODO: add license and strings in my files.
 
 If I were to do this again, I might try https://github.com/machinezone/IXWebSocket/tree/master/test instead. At a glance, the code and usage looks more readable and straightforward to understand.
 uWebSockets library complaints:
 - Examples are using such new features that gcc calls it "experimental"
+- 
 - The project goals seem more oriented towards a consulting honeypot than an easy-to-use websockets library.
 - It's a bit messy, and this pretty basic use case requires poking holes in their abstraction. E.g. defining a periodic timer is a bit clunky. It might be nicer to access the listen socket and open websockets from one context, rather than squirreling this away in custom structs and global variables.
 - The license strings are confusing... it's "Apache 2.0" but I'm not sure they're even applying the simple Apache 2.0 terms.
