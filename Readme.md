@@ -1,4 +1,4 @@
-# "Simple" Random Number Server in C++ with Python-Bokeh Gui Client 
+# Random Number Server in C++ with Python-Bokeh Gui Client 
 
 Here is my version of a Client-Server according to the requirements of the coding challenge:
 - Write a C++ program to generate a random number once per sec.
@@ -10,28 +10,33 @@ Here is my version of a Client-Server according to the requirements of the codin
 
 ## Environment setup/build
 
-0. This project was written for Linux - so start there.
+0. I wrote this for Linux - so start there. I'm running Manjaro (Arch-based), so my versions of things might be annoyingly recent, but I bet it will work fine on any modern Linux with slightly older packages too.
 1. First, clone the repository with submodules (required for uWebSockets library and dependencies):
 `git clone --recurse-submodules <myrepo url>`
 2. Python setup:
   2.1. To be sure, use Python 3.12, and an updated pip. It _should_ work down to Python version 3.10 (this version of Bokeh's limit), but I did not test other versions.
-  2.2. I recommend installing/setting up a virtual environment for python. If you're already using something like conda or pyenv to make sure your Python version matches, just use that. If not, you can use the built in venv before installing dependencies:
+  2.2. I recommend installing/setting up a virtual environment for python. If you're already using something like conda or pyenv, just use that. If not, you can use the built in venv before installing dependencies:
 ```
+<from the root directory of the git repo>
 python3 -m venv .venv
 source .venv/bin/activate```
   2.3. Install websockets and Bokeh libraries, and the dependencies those bring:
 `pip install -r requirements.txt`
 
-3. C++ setup:
-  3.1 Ensure you have a C and C++ compiler installed with modern C++ support (C++20 or newer), and a recent version of Make. For the record I used gcc 14.2.1 and GNU make 4.4.1.
-  3.2 
+3. C++ setup/build:
+  3.1 Ensure you have a C and C++ compiler installed with modern C++ support (C++20 or newer). For the record I used gcc 14.2.1 and GNU make 4.4.1.
+  3.2 Run `./build.sh` from the root of the repository. This just calls gcc in a couple of one-liners, and outputs the executable "server" to the same directory.
 
 ## Running
 Here's how to run the example once you've followed the previous steps:
 1. Launch the C++ server:
-`./server` <<<<<<<TODO>>>>>>>
-2. Launch the Python GUI client with bokeh for updates:
-`bokeh serve --show gui.py`
+`./server`
+2. Launch the Python GUI:
+`python gui.py`
+
+Both C++ server and python scripts log the random number to stdout for easy verification they are in sync.
+It's a little hokey but gui.py is using a separate websocket connection with the server to grab the raw random numbers. It runs a Bokeh server (with its own, independent websocket protocol that I didn't feel like implementing in C++) to display the number on a plot in a browser window.
+
 
 Joke versions I did not make:
 - only use 1 randomly generated number rather than generating a new one each tick
