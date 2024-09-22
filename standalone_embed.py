@@ -2,9 +2,8 @@ from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
 from bokeh.server.server import Server
-from time import sleep
-import threading
-
+import asyncio
+from tornado.ioloop import IOLoop
 from bokeh.document import Document
 
 
@@ -23,12 +22,7 @@ def bkapp(doc):
         
     doc.add_root(plot)
 
-
-server = Server({'/': bkapp})
-server.start()
-server.io_loop.add_callback(server.show, "/")
-
-def updateDocData():
+async def updateDocData():
     print("Periodic callback called")
     global i
     if i == 0:
@@ -38,18 +32,23 @@ def updateDocData():
     source.data = ColumnDataSource.from_df(data)
     i += 1
 
-def my_loop():
+async def my_loop():
     for i in range(10):
-        sleep(1)
+        await asyncio.sleep(1)
         print(f"queueing callback for i={i}")
         global d
-        d.add_next_tick_callback(updateDocData)
+        if d:
+            d.add_next_tick_callback(updateDocData)
+
+async def main():
+    io_loop = IOLoop.current()
+    server = Server({'/': bkapp}, io_loop=io_loop, port=5006)
+    server.start()
+    server.io_loop.add_callback(server.show, "/")
+
+    my_loop_task = asyncio.create_task(my_loop())
+
+    await my_loop_task
 
 if __name__ == '__main__':
-
-    # Create and start a thread for the io_loop
-    io_loop_thread = threading.Thread(target=server.io_loop.start)
-    io_loop_thread.start()
-
-    # Run the other loop in the main thread
-    my_loop()
+    asyncio.run(main())
