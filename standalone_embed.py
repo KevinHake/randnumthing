@@ -73,7 +73,6 @@ def my_loop():
         d.add_next_tick_callback(cbnew2)
 
 if __name__ == '__main__':
-    print('Opening Bokeh application on http://localhost:5006/')
 
     # Create and start a thread for the io_loop
     io_loop_thread = threading.Thread(target=run_io_loop)

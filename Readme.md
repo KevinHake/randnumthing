@@ -5,27 +5,28 @@ Here is my version of a Client-Server according to the requirements of the codin
 - Each new random number will be transmitted via websocket to a Python script
 - The Python script uses the Bokeh Python GUI framework to create a very simple display (just a screen, with the number shown, continuously updating).
 
-
-## Getting started
-
 ## Environment setup/build
 
 0. I wrote this for Linux - so start there. I'm running Manjaro (Arch-based), so my versions of things might be annoyingly recent, but I bet it will work fine on any modern Linux with slightly older packages too.
 1. First, clone the repository with submodules (required for uWebSockets library and dependencies):
 `git clone --recurse-submodules <myrepo url>`
 2. Python setup:
-  2.1. To be sure, use Python 3.12, and an updated pip. It _should_ work down to Python version 3.10 (this version of Bokeh's limit), but I did not test other versions.
-  2.2. I recommend installing/setting up a virtual environment for python. If you're already using something like conda or pyenv, just use that. If not, you can use the built in venv before installing dependencies:
-```
-<from the root directory of the git repo>
-python3 -m venv .venv
-source .venv/bin/activate```
-  2.3. Install websockets and Bokeh libraries, and the dependencies those bring:
-`pip install -r requirements.txt`
+   - To be sure, use Python 3.12, and an updated pip. It _should_ work down to Python version 3.10 (this version of Bokeh's limit), but I did not test other versions.
+   - I recommend installing/setting up a virtual environment for python. If you're already using something like conda or pyenv, just use that. If not, you can use the built in venv before installing dependencies:
+     ```
+     cd <path/to/repo>
+     python3 -m venv .venv
+     source .venv/bin/activate
+     ```
+
+   - Install websockets and Bokeh libraries, and the dependencies those bring:
+     ```
+     pip install -r requirements.txt
+     ```
 
 3. C++ setup/build:
-  3.1 Ensure you have a C and C++ compiler installed with modern C++ support (C++20 or newer). For the record I used gcc 14.2.1 and GNU make 4.4.1.
-  3.2 Run `./build.sh` from the root of the repository. This just calls gcc in a couple of one-liners, and outputs the executable "server" to the same directory.
+   - Ensure you have a C and C++ compiler installed with modern C++ support (C++20 or newer). For the record I used gcc 14.2.1 and GNU make 4.4.1.
+   - Run `./build.sh` from the root of the repository. This just calls gcc in a couple of one-liners, and outputs the executable "server" to the same directory.
 
 ## Running
 Here's how to run the example once you've followed the previous steps:
@@ -35,42 +36,21 @@ Here's how to run the example once you've followed the previous steps:
 `python gui.py`
 
 Both C++ server and python scripts log the random number to stdout for easy verification they are in sync.
-It's a little hokey but gui.py is using a separate websocket connection with the server to grab the raw random numbers. It runs a Bokeh server (with its own, independent websocket protocol that I didn't feel like implementing in C++) to display the number on a plot in a browser window.
+The gui should launch automatically in a browser window.
 
+## Implementation Notes
+I hard coded port number and localhost for both the C++ and python. No config file or input params.
 
-Joke versions I did not make:
-- only use 1 randomly generated number rather than generating a new one each tick
-- "just a sec" mode, where "1 sec" is a random time period between 30-300 seconds.
+It uses non-secure websocket connections (no TLS).
 
+### python
+It's a little hokey but gui.py is using a separate websocket connection with the C++ server to grab the raw random numbers. It runs a Bokeh server (with its own, independent websocket protocol that I didn't feel like implementing in C++) to display the number on a plot in a browser window.
 
-I hard coded port number and localhost instead of a config file/input args, but I'm not a feature creep.
+### C++
+The random number is generated each second from whatever the system has available (std::random_device). I don't use a pseudo-random number generator because I figure the system RNG can handle 1 Hz (tho who knows if the system RNG isn't pseudorandom).
 
+I send the number as a 32-bit unsigned int. Would've been simpler to limit this to uchar, but as it is I have the python script hard-coded to interpret the number as little-endian (which is how the C++ sends it on my machine).
 
-
-Note submodule... maybe do automatic check of submodule init for new repo..?
-I used uWebSockets, just because I was avoiding pulling in boost, and it seemed lightweight. Ask me how I feel about it.
-
-To keep it as bare bones as possible, it's a non-secure connection (no TLS), and obviously no need for compression. So no need for OpenSSL or Zlib dependencies.
-
-
-
-This is also why I send the number unwrapped, in binary. I decided on a 32-bit unsigned int to keep it simple (yeah, uchar would've been simpler:P).
-
-
-This library has its own timer mechanism 
-
-Rather than a simple "sleep 1" for delay, I wake at an absolute time to avoid drift. And tho it's probably negligible, I calculate the next random number while waiting so we send the next request as close to the target time as possible.
-
-TODO? I implemented a signal handler to gracefully exit on SIGINT/SIGTERM because it drives me nuts when ports get tied up this way.
-TODO: python client shuts down if serer closes connection/we stop receiving data.
-TODO tag
-TODO: add license and strings in my files.
-
-If I were to do this again, I might try https://github.com/machinezone/IXWebSocket/tree/master/test instead. At a glance, the code and usage looks more readable and straightforward to understand.
-uWebSockets library complaints:
-- Examples are using such new features that gcc calls it "experimental"
-- 
-- The project goals seem more oriented towards a consulting honeypot than an easy-to-use websockets library.
-- It's a bit messy, and this pretty basic use case requires poking holes in their abstraction. E.g. defining a periodic timer is a bit clunky. It might be nicer to access the listen socket and open websockets from one context, rather than squirreling this away in custom structs and global variables.
-- The license strings are confusing... it's "Apache 2.0" but I'm not sure they're even applying the simple Apache 2.0 terms.
-- The build files for the examples are strange
+I used the uWebSockets library because I was avoiding pulling in boost, and it seemed lightweight. 
+I use its special timer mechanism instead of launching my own periodically firing thread... it seems to schedule things right.
+The design of this library feels like a consultation honeypot rather than easy to use. They go wild with templates and a builder pattern that make it hard to debug. [IXWebSocket](github.com/machinezone/IXWebSocket/) API looks easier to use without needing to know the internals.
