@@ -1,6 +1,5 @@
 from bokeh.models import DataSource
 from bokeh.plotting import figure
-from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
 from bokeh.server.server import Server
 import asyncio
 from tornado.ioloop import IOLoop
