@@ -9,7 +9,10 @@ Here is my version of a Client-Server according to the requirements of the codin
 
 0. I wrote this for Linux - so start there. I'm running Manjaro (Arch-based), so my versions of things might be annoyingly recent, but I bet it will work fine on any modern Linux with slightly older packages too.
 1. First, clone the repository with submodules (required for uWebSockets library and dependencies):
-`git clone --recurse-submodules <myrepo url>`
+   ```
+   mkdir <repo dir name>; cd <repo dir name>
+   git clone --recurse-submodules <this repo's url> .
+   ```
 2. Python setup:
    - To be sure, use Python 3.12, and an updated pip. It _should_ work down to Python version 3.10 (this version of Bokeh's limit), but I did not test other versions.
    - I recommend installing/setting up a virtual environment for python. If you're already using something like conda or pyenv, just use that. If not, you can use the built in venv before installing dependencies:
@@ -25,8 +28,8 @@ Here is my version of a Client-Server according to the requirements of the codin
      ```
 
 3. C++ setup/build:
-   - Ensure you have a C and C++ compiler installed with modern C++ support (C++20 or newer). For the record I used gcc 14.2.1 and GNU make 4.4.1.
-   - Run `./build.sh` from the root of the repository. This just calls gcc in a couple of one-liners, and outputs the executable "server" to the same directory.
+   - Ensure you have a C and C++ compiler installed with modern C++ support (C++17 or newer). For the record I used gcc 14.2.1 and GNU make 4.4.1.
+   - Run `./build.sh` from the root of the repository (it's written for bash). This just calls gcc in a couple of one-liners, and outputs the executable "server" to the same directory.
 
 ## Running
 Here's how to run the example once you've followed the previous steps:
@@ -43,7 +46,7 @@ I hard coded port number and localhost for both the C++ and python. No config fi
 
 It uses non-secure websocket connections (no TLS).
 
-### python
+### Python
 It's a little hokey but gui.py is using a separate websocket connection with the C++ server to grab the raw random numbers. It runs a Bokeh server (with its own, independent websocket protocol that I didn't feel like implementing in C++) to display the number on a plot in a browser window.
 
 ### C++
