@@ -54,6 +54,6 @@ The random number is generated each second from whatever the system has availabl
 
 I send the number as a 32-bit unsigned int. Would've been simpler to limit this to uchar, but as it is I have the python script hard-coded to interpret the number as little-endian (which is how the C++ sends it on my machine).
 
-I used the uWebSockets library because I was avoiding pulling in boost, and it seemed lightweight. 
+I used the uWebSockets library because I was avoiding pulling in boost, and it seemed lightweight.
 I use its special timer mechanism instead of launching my own periodically firing thread... it seems to schedule things right.
-The design of this library feels like a consultation honeypot rather than easy to use. They go wild with templates and a builder pattern that make it hard to debug. [IXWebSocket](github.com/machinezone/IXWebSocket/) API looks easier to use without needing to know the internals.
+The design of this library feels like a consultation honeypot rather than easy to use. They go wild with templates and a builder pattern that make it hard to debug. [IXWebSocket](https://github.com/machinezone/IXWebSocket/) API looks easier to use without needing to know the internals.
